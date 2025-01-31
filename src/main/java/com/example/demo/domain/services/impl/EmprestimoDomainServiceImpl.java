@@ -2,10 +2,13 @@ package com.example.demo.domain.services.impl;
 
 import java.util.UUID;
 
+import org.springframework.stereotype.Service;
+
 import com.example.demo.application.dtos.EmprestimoRequestDto;
 import com.example.demo.application.dtos.EmprestimoResponseDto;
 import com.example.demo.domain.services.interfaces.EmprestimoDomainService;
 
+@Service
 public class EmprestimoDomainServiceImpl implements EmprestimoDomainService {
 
 	@Override
