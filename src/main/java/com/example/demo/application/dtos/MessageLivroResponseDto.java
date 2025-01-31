@@ -5,12 +5,12 @@ import lombok.Data;
 @Data
 public class MessageLivroResponseDto {
 
-	private LivroResponseDto evento;
+	private LivroResponseDto livro;
 	private String mensagem;
-	
-	public MessageLivroResponseDto(LivroResponseDto evento, String mensagem) {
+
+	public MessageLivroResponseDto(LivroResponseDto livro, String mensagem) {
 		super();
-		this.evento = evento;
+		this.livro = livro;
 		this.mensagem = mensagem;
 	}
 }
