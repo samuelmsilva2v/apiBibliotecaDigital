@@ -2,8 +2,12 @@ package com.example.demo.domain.models.entities;
 
 import java.util.UUID;
 
+import com.example.demo.domain.models.enums.StatusLivro;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -28,7 +32,9 @@ public class Livro {
 	
 	@Column(nullable = false)
 	private Integer anoPublicacao;
-	// TODO private StatusLivro status;
+	
+	@Enumerated(EnumType.STRING)
+	private StatusLivro status;
 	
 	@ManyToOne
 	private Usuario emprestadoPara;

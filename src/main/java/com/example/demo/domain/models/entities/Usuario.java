@@ -3,8 +3,12 @@ package com.example.demo.domain.models.entities;
 import java.util.List;
 import java.util.UUID;
 
+import com.example.demo.domain.models.enums.Role;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -26,7 +30,9 @@ public class Usuario {
 	
 	@Column(nullable = false)
 	private String senha;
-	// TODO private Role role;
+	
+	@Enumerated(EnumType.STRING)
+	private Role role;
 	
 	@OneToMany(mappedBy = "emprestadoPara")
 	private List<Livro> livrosEmprestados;
