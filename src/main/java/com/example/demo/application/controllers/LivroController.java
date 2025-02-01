@@ -56,7 +56,6 @@ public class LivroController {
 	@GetMapping
 	public List<LivroResponseDto> get() throws Exception {
 		return livroDomainService.consultarLivros();
-
 	}
 
 	@GetMapping("/titulo")
