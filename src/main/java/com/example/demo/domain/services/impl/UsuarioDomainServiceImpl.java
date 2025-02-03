@@ -11,9 +11,12 @@ import com.example.demo.application.dtos.AutenticarUsuarioRequestDto;
 import com.example.demo.application.dtos.AutenticarUsuarioResponseDto;
 import com.example.demo.application.dtos.CriarUsuarioRequestDto;
 import com.example.demo.application.dtos.CriarUsuarioResponseDto;
+import com.example.demo.application.dtos.ObterDadosUsuarioResponse;
 import com.example.demo.domain.exceptions.AccessDeniedException;
 import com.example.demo.domain.models.entities.Usuario;
+import com.example.demo.domain.models.enums.Role;
 import com.example.demo.domain.services.interfaces.UsuarioDomainService;
+import com.example.demo.infrastructure.components.JwtTokenComponent;
 import com.example.demo.infrastructure.components.SHA256Component;
 import com.example.demo.infrastructure.repositories.UsuarioRepository;
 
@@ -28,6 +31,9 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 	
 	@Autowired
 	private SHA256Component sha256Component;
+	
+	@Autowired
+	private JwtTokenComponent jwtTokenComponent;
 
 	@Override
 	public CriarUsuarioResponseDto criarUsuario(CriarUsuarioRequestDto request) throws Exception {
@@ -43,6 +49,7 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 		usuario.setNome(request.getNome());
 		usuario.setTelefone(request.getTelefone());
 		usuario.setEmail(request.getEmail());
+		usuario.setRole(Role.USER);
 		usuario.setSenha(sha256Component.hash(request.getSenha()));
 		
 		usuarioRepository.save(usuario);
@@ -63,9 +70,28 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 		response.setNome(usuario.getNome());
 		response.setTelefone(usuario.getTelefone());
 		response.setEmail(usuario.getEmail());
-		response.setToken(null);
+		response.setToken(jwtTokenComponent.generateToken(usuario));
 		response.setDataHoraAcesso(new Date());
-		response.setDataHoraExpiracao(null);
+		response.setDataHoraExpiracao(jwtTokenComponent.getExpirationDate());
+		
+		return response;
+	}
+	
+	@Override
+	public ObterDadosUsuarioResponse obterDadosUsuario(String token) throws Exception {
+
+		String email = jwtTokenComponent.getEmailFromToken(token);
+		
+		var usuario = usuarioRepository.findByEmail(email);
+		
+		if (usuario == null)
+			throw new AccessDeniedException();
+		
+		var response = new ObterDadosUsuarioResponse();
+		response.setId(usuario.getId());
+		response.setNome(usuario.getNome());
+		response.setTelefone(usuario.getTelefone());
+		response.setEmail(usuario.getEmail());
 		
 		return response;
 	}
