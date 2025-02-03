@@ -11,6 +11,7 @@ import com.example.demo.application.dtos.CriarUsuarioRequestDto;
 import com.example.demo.application.dtos.CriarUsuarioResponseDto;
 import com.example.demo.domain.models.entities.Usuario;
 import com.example.demo.domain.services.interfaces.UsuarioDomainService;
+import com.example.demo.infrastructure.components.SHA256Component;
 import com.example.demo.infrastructure.repositories.UsuarioRepository;
 
 @Service
@@ -21,12 +22,19 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 	
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private SHA256Component sha256Component;
 
 	@Override
 	public CriarUsuarioResponseDto criarUsuario(CriarUsuarioRequestDto request) throws Exception {
 		
-		var usuario = modelMapper.map(request, Usuario.class);
+		var usuario = new Usuario();
 		usuario.setId(UUID.randomUUID());
+		usuario.setNome(request.getNome());
+		usuario.setTelefone(request.getTelefone());
+		usuario.setEmail(request.getEmail());
+		usuario.setSenha(sha256Component.hash(request.getSenha()));
 		
 		usuarioRepository.save(usuario);
 		
