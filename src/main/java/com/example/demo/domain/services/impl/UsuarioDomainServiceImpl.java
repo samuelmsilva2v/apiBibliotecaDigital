@@ -1,5 +1,6 @@
 package com.example.demo.domain.services.impl;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.application.dtos.AutenticarUsuarioRequestDto;
+import com.example.demo.application.dtos.AutenticarUsuarioResponseDto;
 import com.example.demo.application.dtos.CriarUsuarioRequestDto;
 import com.example.demo.application.dtos.CriarUsuarioResponseDto;
 import com.example.demo.domain.exceptions.AccessDeniedException;
@@ -49,14 +51,22 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 	}
 
 	@Override
-	public String autenticarUsuario(AutenticarUsuarioRequestDto request) throws Exception {
+	public AutenticarUsuarioResponseDto autenticarUsuario(AutenticarUsuarioRequestDto request) throws Exception {
 		
 		var usuario = usuarioRepository.findByEmailAndSenha(request.getEmail(), sha256Component.hash(request.getSenha()));
 		
 		if (usuario == null)
 			throw new AccessDeniedException();
 		
-		return "Usuário autenticado com sucesso!";
+		var response = new AutenticarUsuarioResponseDto();
+		response.setId(usuario.getId());
+		response.setNome(usuario.getNome());
+		response.setTelefone(usuario.getTelefone());
+		response.setEmail(usuario.getEmail());
+		response.setToken(null);
+		response.setDataHoraAcesso(new Date());
+		response.setDataHoraExpiracao(null);
+		
+		return response;
 	}
-
 }

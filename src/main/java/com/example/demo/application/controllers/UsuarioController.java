@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.application.dtos.AutenticarUsuarioRequestDto;
+import com.example.demo.application.dtos.AutenticarUsuarioResponseDto;
 import com.example.demo.application.dtos.CriarUsuarioRequestDto;
 import com.example.demo.application.dtos.CriarUsuarioResponseDto;
 import com.example.demo.domain.services.interfaces.UsuarioDomainService;
@@ -26,7 +27,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/autenticar")
-    public String autenticarUsuario(@RequestBody @Valid AutenticarUsuarioRequestDto request) throws Exception {
+    public AutenticarUsuarioResponseDto autenticarUsuario(@RequestBody @Valid AutenticarUsuarioRequestDto request) throws Exception {
         return usuarioDomainService.autenticarUsuario(request);
     }
 }
