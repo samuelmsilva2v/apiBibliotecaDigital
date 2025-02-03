@@ -14,6 +14,8 @@ import com.example.demo.application.dtos.EmprestimoRequestDto;
 import com.example.demo.application.dtos.EmprestimoResponseDto;
 import com.example.demo.domain.services.interfaces.EmprestimoDomainService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/emprestimos")
 public class EmprestimoController {
@@ -22,7 +24,7 @@ public class EmprestimoController {
     private EmprestimoDomainService emprestimoDomainService;
 
     @PostMapping
-    public EmprestimoResponseDto emprestarLivro(@RequestBody EmprestimoRequestDto request) throws Exception {
+    public EmprestimoResponseDto emprestarLivro(@RequestBody @Valid EmprestimoRequestDto request) throws Exception {
         return emprestimoDomainService.emprestarLivro(request);
     }
 

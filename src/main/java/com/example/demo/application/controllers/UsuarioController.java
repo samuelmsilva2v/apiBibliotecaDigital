@@ -11,6 +11,8 @@ import com.example.demo.application.dtos.CriarUsuarioRequestDto;
 import com.example.demo.application.dtos.CriarUsuarioResponseDto;
 import com.example.demo.domain.services.interfaces.UsuarioDomainService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
@@ -19,12 +21,12 @@ public class UsuarioController {
     private UsuarioDomainService usuarioDomainService;
 
     @PostMapping
-    public CriarUsuarioResponseDto criarUsuario(@RequestBody CriarUsuarioRequestDto request) throws Exception {
+    public CriarUsuarioResponseDto criarUsuario(@RequestBody @Valid CriarUsuarioRequestDto request) throws Exception {
         return usuarioDomainService.criarUsuario(request);
     }
 
     @PostMapping("/autenticar")
-    public String autenticarUsuario(@RequestBody AutenticarUsuarioRequestDto request) throws Exception {
+    public String autenticarUsuario(@RequestBody @Valid AutenticarUsuarioRequestDto request) throws Exception {
         return usuarioDomainService.autenticarUsuario(request);
     }
 }

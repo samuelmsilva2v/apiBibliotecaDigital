@@ -20,6 +20,8 @@ import com.example.demo.application.dtos.MessageLivroResponseDto;
 import com.example.demo.domain.models.enums.StatusLivro;
 import com.example.demo.domain.services.interfaces.LivroDomainService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/livros")
 public class LivroController {
@@ -28,17 +30,17 @@ public class LivroController {
 	private LivroDomainService livroDomainService;
 
 	@PostMapping
-	public LivroResponseDto post(@RequestBody LivroRequestDto request) throws Exception {
+	public LivroResponseDto post(@RequestBody @Valid LivroRequestDto request) throws Exception {
 		return livroDomainService.registrarLivro(request);
 	}
 
 	@PutMapping("/{id}")
-	public MessageLivroResponseDto put(@PathVariable UUID id, @RequestBody LivroRequestDto request) throws Exception {
+	public MessageLivroResponseDto put(@PathVariable UUID id, @RequestBody @Valid LivroRequestDto request) throws Exception {
 		return livroDomainService.editarLivro(id, request);
 	}
 
 	@PutMapping("/{id}/status")
-	public LivroResponseDto putStatus(@PathVariable UUID id, @RequestBody StatusLivro status) {
+	public LivroResponseDto putStatus(@PathVariable UUID id, @RequestBody @Valid StatusLivro status) {
 		return livroDomainService.atualizarStatus(id, status);
 	}
 
@@ -59,17 +61,17 @@ public class LivroController {
 	}
 
 	@GetMapping("/titulo")
-	public List<LivroResponseDto> getByTitulo(@RequestParam String titulo) throws Exception {
+	public List<LivroResponseDto> getByTitulo(@RequestParam @Valid String titulo) throws Exception {
 		return livroDomainService.buscarLivrosPorTitulo(titulo);
 	}
 
 	@GetMapping("/autor")
-	public List<LivroResponseDto> getByAutor(@RequestParam String autor) throws Exception {
+	public List<LivroResponseDto> getByAutor(@RequestParam @Valid String autor) throws Exception {
 		return livroDomainService.buscarLivroPorAutor(autor);		
 	}
 
 	@GetMapping("/editora")
-	public List<LivroResponseDto> getByEditora(@RequestParam String editora) throws Exception {
+	public List<LivroResponseDto> getByEditora(@RequestParam @Valid String editora) throws Exception {
 		return livroDomainService.buscarLivroPorEditora(editora);
 	}
 
