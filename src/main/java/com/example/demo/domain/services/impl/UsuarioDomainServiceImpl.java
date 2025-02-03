@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.application.dtos.AutenticarUsuarioRequestDto;
 import com.example.demo.application.dtos.CriarUsuarioRequestDto;
 import com.example.demo.application.dtos.CriarUsuarioResponseDto;
+import com.example.demo.domain.exceptions.AccessDeniedException;
 import com.example.demo.domain.models.entities.Usuario;
 import com.example.demo.domain.services.interfaces.UsuarioDomainService;
 import com.example.demo.infrastructure.components.SHA256Component;
@@ -29,6 +30,12 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 	@Override
 	public CriarUsuarioResponseDto criarUsuario(CriarUsuarioRequestDto request) throws Exception {
 		
+		if (usuarioRepository.existsByEmail(request.getEmail())) 
+			throw new IllegalArgumentException("Já existe um usuário cadastrado com o e-mail: " + request.getEmail());
+		
+		if (usuarioRepository.existsByTelefone(request.getTelefone()))
+			throw new IllegalArgumentException("Já existe um usuário cadastrado com o telefone: " + request.getTelefone());
+		
 		var usuario = new Usuario();
 		usuario.setId(UUID.randomUUID());
 		usuario.setNome(request.getNome());
@@ -43,8 +50,13 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 
 	@Override
 	public String autenticarUsuario(AutenticarUsuarioRequestDto request) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		
+		var usuario = usuarioRepository.findByEmailAndSenha(request.getEmail(), sha256Component.hash(request.getSenha()));
+		
+		if (usuario == null)
+			throw new AccessDeniedException();
+		
+		return "Usuário autenticado com sucesso!";
 	}
 
 }
