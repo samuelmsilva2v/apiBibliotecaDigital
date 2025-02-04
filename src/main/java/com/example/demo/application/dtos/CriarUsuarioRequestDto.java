@@ -7,22 +7,21 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CriarUsuarioRequestDto {
+public class CriarUsuarioRequestDto { 
 
-	@NotBlank(message = "O nome do usuário é obrigatório.")
+	@NotBlank(message = "Por favor, informe o nome do usuário.")
 	@Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
 	private String nome;
 
-	@NotBlank(message = "O telefone é obrigatório.")
+	@NotBlank(message = "Por favor, informe o telefone do usuário.")
 	@Pattern(regexp = "^\\d{2} \\d{5}-\\d{4}$", message = "Formato de telefone inválido. Use o padrão XX XXXXX-XXXX.")
 	private String telefone;
 
-	@NotBlank(message = "O e-mail é obrigatório.")
+	@NotBlank(message = "Por favor, informe o e-mail do usuário.")
 	@Email(message = "Formato de e-mail inválido.")
 	private String email;
 
-	@NotBlank(message = "A senha é obrigatória.")
-	@Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres.")
-	@Pattern(regexp = "^(?=.*[!@#$%^&*()\\-_=+{};:,<.>/?])(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).*$", message = "A senha deve conter pelo menos um símbolo, um número, uma letra maiúscula e uma minúscula.")
+	@NotBlank(message = "Por favor, informe a senha do usuário.")
+	@Pattern(regexp = "^(?=.*[!@#$%^&*()\\-_=+{};:,<.>/?])(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).*$", message = "Informe a senha com letras minúsculas, maiúsculas, números e símbolos e pelo menos 8 carateres.")
 	private String senha;
 }

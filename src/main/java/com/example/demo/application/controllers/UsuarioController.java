@@ -24,7 +24,7 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioDomainService usuarioDomainService;
 
-	@PostMapping
+	@PostMapping("/criar")
 	public CriarUsuarioResponseDto criarUsuario(@RequestBody @Valid CriarUsuarioRequestDto request) throws Exception {
 		return usuarioDomainService.criarUsuario(request);
 	}

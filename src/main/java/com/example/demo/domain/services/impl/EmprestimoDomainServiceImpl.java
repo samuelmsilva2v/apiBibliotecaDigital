@@ -35,10 +35,19 @@ public class EmprestimoDomainServiceImpl implements EmprestimoDomainService {
 	@Override
 	public EmprestimoResponseDto emprestarLivro(EmprestimoRequestDto request) throws Exception {
 
-		var livro = livroRepository.findById(request.getLivroId()).get();
+		var livro = livroRepository.findById(request.getLivroId())
+				.orElseThrow(() -> new IllegalArgumentException("Livro " + request.getLivroId() + "não encontrado."));
 
-		var usuario = usuarioRepository.findById(request.getUsuarioId()).get();
-
+		var usuario = usuarioRepository.findById(request.getUsuarioId()).orElseThrow(
+				() -> new IllegalArgumentException("Usuário " + request.getUsuarioId() + "não encontrado."));
+		
+		if (livro.getStatus() == StatusLivro.EMPRESTADO)
+			throw new IllegalArgumentException("Livro " + request.getLivroId() + " já emprestado.");
+		
+		if (livro.getStatus().equals(StatusLivro.INDISPONIVEL))
+            throw new IllegalArgumentException("Livro " + request.getLivroId() + " indisponível.");
+		
+		
 		var emprestimo = new Emprestimo();
 		emprestimo.setId(UUID.randomUUID());
 		emprestimo.setLivro(livro);
@@ -61,7 +70,6 @@ public class EmprestimoDomainServiceImpl implements EmprestimoDomainService {
 		response.setDevolvido(emprestimo.isDevolvido());
 
 		return response;
-
 	}
 
 	@Override
@@ -86,6 +94,7 @@ public class EmprestimoDomainServiceImpl implements EmprestimoDomainService {
 
 	@Override
 	public List<EmprestimoResponseDto> consultarEmprestimos() throws Exception {
+
 		return emprestimoRepository.findAll().stream().map(emprestimo -> {
 			var response = new EmprestimoResponseDto();
 			response.setId(emprestimo.getId());

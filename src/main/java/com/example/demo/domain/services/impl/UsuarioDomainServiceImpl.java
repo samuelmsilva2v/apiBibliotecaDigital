@@ -13,6 +13,7 @@ import com.example.demo.application.dtos.CriarUsuarioRequestDto;
 import com.example.demo.application.dtos.CriarUsuarioResponseDto;
 import com.example.demo.application.dtos.ObterDadosUsuarioResponse;
 import com.example.demo.domain.exceptions.AccessDeniedException;
+import com.example.demo.domain.exceptions.BusinessException;
 import com.example.demo.domain.models.entities.Usuario;
 import com.example.demo.domain.models.enums.Role;
 import com.example.demo.domain.services.interfaces.UsuarioDomainService;
@@ -39,10 +40,10 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 	public CriarUsuarioResponseDto criarUsuario(CriarUsuarioRequestDto request) throws Exception {
 		
 		if (usuarioRepository.existsByEmail(request.getEmail())) 
-			throw new IllegalArgumentException("Já existe um usuário cadastrado com o e-mail: " + request.getEmail());
+			throw new BusinessException("Já existe um usuário cadastrado com o e-mail: " + request.getEmail());
 		
 		if (usuarioRepository.existsByTelefone(request.getTelefone()))
-			throw new IllegalArgumentException("Já existe um usuário cadastrado com o telefone: " + request.getTelefone());
+			throw new BusinessException("Já existe um usuário cadastrado com o telefone: " + request.getTelefone());
 		
 		var usuario = new Usuario();
 		usuario.setId(UUID.randomUUID());
