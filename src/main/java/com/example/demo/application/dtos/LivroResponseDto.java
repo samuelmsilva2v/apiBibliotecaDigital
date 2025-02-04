@@ -14,5 +14,5 @@ public class LivroResponseDto {
 	private String editora;
 	private Integer anoPublicacao;
 	private StatusLivro status;
-	private UUID emprestadoPara;
+	private UsuarioResponseDto emprestadoPara;
 }

@@ -1,8 +1,10 @@
 package com.example.demo.application.controllers;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,12 +26,17 @@ public class EmprestimoController {
     private EmprestimoDomainService emprestimoDomainService;
 
     @PostMapping
-    public EmprestimoResponseDto emprestarLivro(@RequestBody @Valid EmprestimoRequestDto request) throws Exception {
+    public EmprestimoResponseDto post(@RequestBody @Valid EmprestimoRequestDto request) throws Exception {
         return emprestimoDomainService.emprestarLivro(request);
     }
 
     @PutMapping("/{id}/devolver")
-    public EmprestimoResponseDto devolverLivro(@PathVariable UUID id) throws Exception {
+    public EmprestimoResponseDto put(@PathVariable UUID id) throws Exception {
         return emprestimoDomainService.devolverLivro(id);
     }
+    
+    @GetMapping
+	public List<EmprestimoResponseDto> getAll() throws Exception {
+		return emprestimoDomainService.consultarEmprestimos();
+	}
 }
