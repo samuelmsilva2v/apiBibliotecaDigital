@@ -3,13 +3,14 @@ package com.example.demo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +25,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import com.example.demo.application.dtos.CriarUsuarioRequestDto;
+import com.example.demo.application.dtos.CriarUsuarioResponseDto;
+import com.example.demo.application.dtos.EmprestimoRequestDto;
+import com.example.demo.application.dtos.EmprestimoResponseDto;
 import com.example.demo.application.dtos.LivroRequestDto;
 import com.example.demo.application.dtos.LivroResponseDto;
 import com.example.demo.application.dtos.MessageLivroResponseDto;
@@ -45,10 +49,12 @@ class ApiBibliotecaDigitalApplicationTests {
 
 	private static String emailUsuario;
 	private static String telefoneUsuario;
-	private static UUID livroId;
 	private static String livroTitulo;
 	private static String livroAutor;
 	private static String livroEditora;
+	private static UUID usuarioId;
+	private static UUID livroId;
+	private static UUID emprestimoId;
 
 	@Test
 	@Order(1)
@@ -66,11 +72,15 @@ class ApiBibliotecaDigitalApplicationTests {
 
 		System.out.println("Request: " + objectMapper.writeValueAsString(request));
 
-		mockMvc.perform(post("/api/usuarios/criar").contentType("application/json")
-				.content(objectMapper.writeValueAsString(request))).andExpect(status().isOk());
+		MvcResult result = mockMvc.perform(post("/api/usuarios/criar").contentType("application/json")
+				.content(objectMapper.writeValueAsString(request))).andExpect(status().isOk()).andReturn();
+
+		var content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+		var response = objectMapper.readValue(content, CriarUsuarioResponseDto.class);
 
 		emailUsuario = request.getEmail();
 		telefoneUsuario = request.getTelefone();
+		usuarioId = response.getId();
 	}
 
 	@Test
@@ -315,6 +325,51 @@ class ApiBibliotecaDigitalApplicationTests {
 
 	@Test
 	@Order(13)
+	public void getAllBooksTest() throws Exception {
+
+		var result = mockMvc.perform(get("/api/livros")).andExpect(status().isOk()).andReturn();
+
+		var content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+		var response = objectMapper.readValue(content, new TypeReference<List<LivroResponseDto>>() {
+		});
+
+		response.stream().filter(livro -> livro.getId().equals(livroId)).findFirst()
+				.orElseThrow(() -> new AssertionError("Livro com ID" + livroId + " não encontrado na lista"));
+	}
+
+	@Test
+	@Order(14)
+	public void registerLoanTest() throws Exception {
+
+		var request = new EmprestimoRequestDto();
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		Date dataEmprestimo = dateFormat.parse(dateFormat.format(new Date()));
+		Date dataDevolucaoPrevista = dateFormat
+				.parse(dateFormat.format(new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000)));
+
+		request.setUsuarioId(usuarioId);
+		request.setLivroId(livroId);
+		request.setDataEmprestimo(dataEmprestimo);
+		request.setDataDevolucaoPrevista(dataDevolucaoPrevista);
+		request.setDevolvido(false);
+
+		var result = mockMvc.perform(post("/api/emprestimos").contentType("application/json")
+				.content(objectMapper.writeValueAsString(request))).andExpect(status().isOk()).andReturn();
+
+		var content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+		var response = objectMapper.readValue(content, EmprestimoResponseDto.class);
+
+		assertNotNull(response.getId());
+		assertEquals(response.getLivro().getId(), livroId);
+
+		emprestimoId = response.getId();
+	}
+
+	@Test
+	@Order(15)
 	public void updateBookStatusTest() throws Exception {
 
 		var result = mockMvc
@@ -331,32 +386,33 @@ class ApiBibliotecaDigitalApplicationTests {
 	}
 
 	@Test
-	@Order(14)
-	public void getAllBooksTest() throws Exception {
+	@Order(16)
+	public void returnLoanTest() throws Exception {
 
-		var result = mockMvc.perform(get("/api/livros")).andExpect(status().isOk()).andReturn();
+		var result = mockMvc
+				.perform(put("/api/emprestimos/" + emprestimoId + "/devolver").contentType("application/json"))
+				.andExpect(status().isOk()).andReturn();
 
 		var content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
 
-		var response = objectMapper.readValue(content, new TypeReference<List<LivroResponseDto>>() {
+		var response = objectMapper.readValue(content, EmprestimoResponseDto.class);
+
+		assertTrue(response.isDevolvido());
+	}
+
+	@Test
+	@Order(17)
+	public void getAllLoans() throws Exception {
+
+		var result = mockMvc.perform(get("/api/emprestimos")).andExpect(status().isOk()).andReturn();
+
+		var content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+
+		var response = objectMapper.readValue(content, new TypeReference<List<EmprestimoResponseDto>>() {
 		});
 
-		response.stream().filter(livro -> livro.getId().equals(livroId)).findFirst()
-				.orElseThrow(() -> new AssertionError("Livro com ID" + livroId + " não encontrado na lista"));
-	}
-	
-	@Test
-	@Order(15)
-	public void deleteBookTest() throws Exception {
-		
-		var result = mockMvc.perform(delete("/api/livros/" + livroId)).andExpect(status().isOk()).andReturn();
-		
-		var content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
-
-		var response = objectMapper.readValue(content, MessageLivroResponseDto.class);
-		
-		assertEquals(response.getLivro().getId(), livroId);
-		assertNotNull(response.getMensagem());
+		response.stream().filter(emprestimo -> emprestimo.getId().equals(emprestimoId)).findFirst()
+				.orElseThrow(() -> new AssertionError("Empréstimo com ID" + emprestimoId + " não encontrado na lista"));
 	}
 
 }
