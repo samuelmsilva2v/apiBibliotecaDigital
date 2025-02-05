@@ -7,6 +7,9 @@ public class MessageLivroResponseDto {
 
 	private LivroResponseDto livro;
 	private String mensagem;
+	
+	public MessageLivroResponseDto() {
+	}
 
 	public MessageLivroResponseDto(LivroResponseDto livro, String mensagem) {
 		super();
