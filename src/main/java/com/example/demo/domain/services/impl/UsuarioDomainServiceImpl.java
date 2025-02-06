@@ -18,6 +18,7 @@ import com.example.demo.domain.models.entities.Usuario;
 import com.example.demo.domain.models.enums.Role;
 import com.example.demo.domain.services.interfaces.UsuarioDomainService;
 import com.example.demo.infrastructure.components.JwtTokenComponent;
+import com.example.demo.infrastructure.components.MessageProducerComponent;
 import com.example.demo.infrastructure.components.SHA256Component;
 import com.example.demo.infrastructure.repositories.UsuarioRepository;
 
@@ -35,6 +36,9 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 	
 	@Autowired
 	private JwtTokenComponent jwtTokenComponent;
+	
+	@Autowired
+	private MessageProducerComponent messageProducerComponent;
 
 	@Override
 	public CriarUsuarioResponseDto criarUsuario(CriarUsuarioRequestDto request) throws Exception {
@@ -54,6 +58,12 @@ public class UsuarioDomainServiceImpl implements UsuarioDomainService {
 		usuario.setSenha(sha256Component.hash(request.getSenha()));
 		
 		usuarioRepository.save(usuario);
+		
+		try {
+			messageProducerComponent.send(usuario);	
+		} catch (Exception e) {
+            e.printStackTrace();
+        }
 		
 		return modelMapper.map(usuario, CriarUsuarioResponseDto.class);
 	}
