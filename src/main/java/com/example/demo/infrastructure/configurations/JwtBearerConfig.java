@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import com.example.demo.infrastructure.filters.JwtBearerFilter;
 
 @Configuration
-public class JwtBearerConfiguration {
+public class JwtBearerConfig {
 
 	@Bean
 	FilterRegistrationBean<JwtBearerFilter> jwtFilter() {
