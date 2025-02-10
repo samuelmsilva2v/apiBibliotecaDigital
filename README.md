@@ -1,5 +1,5 @@
 # 📚 Biblioteca Digital
-[🇺🇸 Read in English](#digital-library)
+[🇺🇸 Read in English](#📚-digital-library)
 
 O **Sistema de Biblioteca Digital** é uma API RESTful desenvolvida em Java com Spring Boot para gerenciar livros, usuários e empréstimos. O projeto inclui autenticação JWT e um sistema de mensageria para notificações.
 
@@ -73,7 +73,7 @@ docker-compose up -d
 ---
 
 # 📚 Digital Library
-[🇧🇷 Leia em Português](#biblioteca-digital)
+[🇧🇷 Leia em Português](#📚-biblioteca-digital)
 
 The **Digital Library System** is a RESTful API developed in Java with Spring Boot to manage books, users, and loans. The project includes JWT authentication and a messaging system for notifications.
 
